@@ -1,0 +1,41 @@
+{
+  "name": "@ahws/react-calendar",
+  "version": "0.0.1",
+  "description": "A minimal lightweight react component for adding a nice scroll up (back to top) button with onScroll progress.",
+  "author": "yaobin <yaob421123@163.com>",
+  "homepage": "https://uiwjs.github.io/react-back-to-top",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uiwjs/react-back-to-top.git"
+  },
+  "license": "MIT",
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "files": [
+    "dist.css",
+    "dist",
+    "cjs",
+    "esm",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "react-calendar",
+    "react.js",
+    "react",
+    "calendar"
+  ],
+  "peerDependencies": {
+    "react": ">=16.9.0",
+    "react-dom": ">=16.9.0"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.18.9",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
