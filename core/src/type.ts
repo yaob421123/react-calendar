@@ -5,4 +5,5 @@ export interface ReactCalendarProps {
   lang?: 'cn' | 'en';
   weekStart?: ReactCalendarWeekType;
   weeks?: string[];
+  checkColor?: string;
 }

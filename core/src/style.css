@@ -60,6 +60,17 @@
   justify-content: center;
   flex-direction: column;
 }
+.w--calendar-group-day {
+  border-radius: 50%;
+  width: 60%;
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.w--calendar-group-inner {
+  background: #f3f3f3;
+}
 .w--calendar-group-pre,
 .w--calendar-group-next {
   opacity: .2;

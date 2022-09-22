@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ReactComponent as LeftIcon } from './icons/arrow-left-bold.svg';
 import { ReactComponent as RightIcon } from './icons/arrow-right-bold.svg';
-import { getDefaultWeek, getDateObj, getNowDate, weekConfigProps, zero } from './utils';
+import { getDefaultWeek, getDateObj, getNowDate, zero, weekConfigProps, dataItemsProps } from './utils';
 import { ReactCalendarProps } from './type';
 import './style.css';
 export * from './type';
@@ -13,7 +13,7 @@ for (let i = 0; i < count; i++) {
 }
 
 function Page(props: ReactCalendarProps) {
-  const { weekStart = 'Tue', lang = 'cn', weeks } = props;
+  const { weekStart = 'Tue', lang = 'cn', weeks, checkColor = '#1890ff' } = props;
 
   const calendarRef = useRef<HTMLDivElement>(null);
   const [itemStyle, setItemStyle] = useState<React.CSSProperties>({});
@@ -32,13 +32,14 @@ function Page(props: ReactCalendarProps) {
       setNewWeeks(weeks || _week.week);
       setOllWeeks(_week.date);
       setDateObj(_dateObj);
-      const data = getNowDate(_week.date, _dateObj.year, _dateObj.month);
+      const data = getNowDate(_week.date, _dateObj);
       setDates(data);
     }
   }, [calendarRef]);
 
-  const onCheckMonth = (type: string) => {
-    const { year, month, date } = dateObj;
+  /** 上月 / 下月 */
+  const onCheckMonth = (type: string, obj?: any) => {
+    const { year, month, date } = obj || dateObj;
     let _year = year;
     let _month = month;
     if (type === 'pre') {
@@ -60,8 +61,28 @@ function Page(props: ReactCalendarProps) {
     const d = `${_year}-${zero(_month)}-${zero(date)}`;
     const _dateObj = getDateObj(d);
     setDateObj(_dateObj);
-    const data = getNowDate(ollWeeks, _dateObj.year, _dateObj.month);
+    const data = getNowDate(ollWeeks, _dateObj);
     setDates(data);
+  };
+
+  /** */
+  const onCheckDate = async (items: dataItemsProps) => {
+    const data = dates.map((item: dataItemsProps) => {
+      return {
+        ...item,
+        check: item.date === items.date,
+      };
+    });
+    const obj = {
+      ...dateObj,
+      date: items.day,
+      day: items.date,
+    };
+    setDates(data);
+    await setDateObj(obj);
+    if (['pre', 'next'].includes(items.type)) {
+      onCheckMonth(items.type, obj);
+    }
   };
 
   return (
@@ -83,11 +104,27 @@ function Page(props: ReactCalendarProps) {
         ))}
       </div>
       <div className="w--calendar-group">
-        {dates.map((item, index) => (
-          <div key={index} className="w--calendar-group-item" style={itemStyle}>
-            <div className={`w--calendar-group-${item.type}`}>{item.day}</div>
-          </div>
-        ))}
+        {dates.map((item, index) => {
+          const cls = [
+            'w--calendar-group-day',
+            `w--calendar-group-${item.type}`,
+            item.check ? `w--calendar-group-check` : null,
+            item.now ? 'w--calendar-group-inner' : null,
+          ].join(' ');
+          const style: React.CSSProperties = item.check
+            ? {
+                background: checkColor,
+                color: '#fff',
+              }
+            : {};
+          return (
+            <div key={index} className="w--calendar-group-item" style={itemStyle}>
+              <div className={cls} style={style} onClick={() => onCheckDate(item)}>
+                {item.day}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -6,6 +6,14 @@ export interface weekConfigProps {
   week: number;
 }
 
+export interface dataItemsProps {
+  day: string | number;
+  type: 'pre' | 'now' | 'next';
+  date: string;
+  check: boolean;
+  now?: boolean;
+}
+
 const weekConfig: weekConfigProps[] = [
   { cn: '日', en: 'Sun', week: 0 },
   { cn: '一', en: 'Mon', week: 1 },
@@ -65,39 +73,59 @@ const getMonthFristDay = (year: number, month: number) => {
 /**
  * 获取当前月天数
  */
-const getNowDate = (week: weekConfigProps[], year: number, month: number) => {
+const getNowDate = (week: weekConfigProps[], dataObj: any) => {
+  const { year, month, day } = dataObj;
   const nowFristDay = getMonthFristDay(year, month); // 当月第一天星期几
   const preMonthDay = getMonthDay(year, month - 1); // 获取上月有多少天
   const nowMonthDay = getMonthDay(year, month); // 获取当前月有多少天
 
   const nowIndex = week.findIndex((item) => item.week === nowFristDay);
+  const now = getDateObj();
 
   const dateList = [];
   if (nowIndex) {
     for (let i = preMonthDay; i > 0; i--) {
       if (dateList.length < nowIndex) {
-        dateList.unshift({
+        const date = `${year}-${zero(month - 1)}-${zero(i)}`;
+        let obj: dataItemsProps = {
           day: zero(i, true),
           type: 'pre',
-          date: `${year}-${zero(month - 1)}-${zero(i)}`,
-        });
+          date: date,
+          check: day === date,
+        };
+        if (now.day === date) {
+          obj.now = true;
+        }
+        dateList.unshift(obj);
       }
     }
   }
   for (let i = 1; i <= nowMonthDay; i++) {
-    dateList.push({
+    const date = `${year}-${zero(month)}-${zero(i)}`;
+    let obj: dataItemsProps = {
       day: zero(i, true),
       type: 'now',
-      date: `${year}-${zero(month)}-${zero(i)}`,
-    });
+      date: date,
+      check: day === date,
+    };
+    if (now.day === date) {
+      obj.now = true;
+    }
+    dateList.push(obj);
   }
   const nextDay = 42 - dateList.length;
   for (let i = 1; i <= nextDay; i++) {
-    dateList.push({
+    const date = `${year}-${zero(month + 1)}-${zero(i)}`;
+    let obj: dataItemsProps = {
       day: zero(i, true),
       type: 'next',
-      date: `${year}-${zero(month + 1)}-${zero(i)}`,
-    });
+      date: date,
+      check: day === date,
+    };
+    if (now.day === date) {
+      obj.now = true;
+    }
+    dateList.push(obj);
   }
   return dateList;
 };
