@@ -10,6 +10,7 @@ export interface dataItemsProps {
   day: string | number;
   type: 'pre' | 'now' | 'next';
   date: string;
+  month: string | number;
   check: boolean;
   now?: boolean;
 }
@@ -47,10 +48,10 @@ const getDateObj = (date?: string) => {
   const mm = zero(d.getMonth() + 1);
   const dd = zero(d.getDate());
   return {
-    day: `${yy}-${mm}-${dd}`,
+    date: `${yy}-${mm}-${dd}`,
     year: yy,
     month: Number(mm),
-    date: Number(dd),
+    day: Number(dd),
   };
 };
 
@@ -74,7 +75,7 @@ const getMonthFristDay = (year: number, month: number) => {
  * 获取当前月天数
  */
 const getNowDate = (week: weekConfigProps[], dataObj: any) => {
-  const { year, month, day } = dataObj;
+  const { year, month, date: _date } = dataObj;
   const nowFristDay = getMonthFristDay(year, month); // 当月第一天星期几
   const preMonthDay = getMonthDay(year, month - 1); // 获取上月有多少天
   const nowMonthDay = getMonthDay(year, month); // 获取当前月有多少天
@@ -91,9 +92,10 @@ const getNowDate = (week: weekConfigProps[], dataObj: any) => {
           day: zero(i, true),
           type: 'pre',
           date: date,
-          check: day === date,
+          check: _date === date,
+          month: month - 1,
         };
-        if (now.day === date) {
+        if (now.date === date) {
           obj.now = true;
         }
         dateList.unshift(obj);
@@ -106,9 +108,10 @@ const getNowDate = (week: weekConfigProps[], dataObj: any) => {
       day: zero(i, true),
       type: 'now',
       date: date,
-      check: day === date,
+      check: _date === date,
+      month: month,
     };
-    if (now.day === date) {
+    if (now.date === date) {
       obj.now = true;
     }
     dateList.push(obj);
@@ -120,9 +123,10 @@ const getNowDate = (week: weekConfigProps[], dataObj: any) => {
       day: zero(i, true),
       type: 'next',
       date: date,
-      check: day === date,
+      check: _date === date,
+      month: month + 1,
     };
-    if (now.day === date) {
+    if (now.date === date) {
       obj.now = true;
     }
     dateList.push(obj);

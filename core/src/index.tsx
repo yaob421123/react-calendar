@@ -13,7 +13,7 @@ for (let i = 0; i < count; i++) {
 }
 
 function Page(props: ReactCalendarProps) {
-  const { weekStart = 'Tue', lang = 'cn', weeks, checkColor = '#1890ff' } = props;
+  const { weekStart = 'Tue', lang = 'cn', weeks, checkColor = '#1890ff', onChange } = props;
 
   const calendarRef = useRef<HTMLDivElement>(null);
   const [itemStyle, setItemStyle] = useState<React.CSSProperties>({});
@@ -39,7 +39,7 @@ function Page(props: ReactCalendarProps) {
 
   /** 上月 / 下月 */
   const onCheckMonth = (type: string, obj?: any) => {
-    const { year, month, date } = obj || dateObj;
+    const { year, month, day } = obj || dateObj;
     let _year = year;
     let _month = month;
     if (type === 'pre') {
@@ -58,14 +58,20 @@ function Page(props: ReactCalendarProps) {
         _month++;
       }
     }
-    const d = `${_year}-${zero(_month)}-${zero(date)}`;
+    const d = `${_year}-${zero(_month)}-${zero(day)}`;
     const _dateObj = getDateObj(d);
     setDateObj(_dateObj);
     const data = getNowDate(ollWeeks, _dateObj);
     setDates(data);
+    onChange &&
+      onChange({
+        date: _dateObj.date,
+        year: _dateObj.year,
+        month: _dateObj.month,
+        day: Number(_dateObj.day),
+      });
   };
 
-  /** */
   const onCheckDate = async (items: dataItemsProps) => {
     const data = dates.map((item: dataItemsProps) => {
       return {
@@ -75,23 +81,30 @@ function Page(props: ReactCalendarProps) {
     });
     const obj = {
       ...dateObj,
-      date: items.day,
-      day: items.date,
+      day: items.day,
+      date: items.date,
     };
     setDates(data);
     await setDateObj(obj);
     if (['pre', 'next'].includes(items.type)) {
       onCheckMonth(items.type, obj);
+    } else {
+      onChange &&
+        onChange({
+          date: obj.date,
+          year: obj.year,
+          month: obj.month,
+          day: Number(obj.day),
+        });
     }
   };
-
   return (
     <div className="w--calendar" ref={calendarRef}>
       <div className="w--calendar-top">
         <div className="icons" onClick={() => onCheckMonth('pre')}>
           <LeftIcon height="22" width="22" fill="#00000040" />
         </div>
-        <div className="title">{dateObj.day}</div>
+        <div className="title">{dateObj.date}</div>
         <div className="icons" onClick={() => onCheckMonth('next')}>
           <RightIcon height="22" width="22" fill="#00000040" />
         </div>
